@@ -144,13 +144,35 @@ app.UseHttpsRedirection();
 
 app.MapGet("/ping", () => "pong");
 
-app.MapGet("/add", async (IHttpClientFactory factory) =>
+// .NET Activity Source is called "Tracer" in OpenTelemetry.
+// Consider using https://opentelemetry.io/docs/languages/net/shim/
+// to harmonize the naming of the components.
+var source = new ActivitySource("WebApi");
+var totalSums = new Meter("TotalSum").CreateCounter<int>("sum.total");
+
+app.MapGet("/add", async (IHttpClientFactory factory, ILogger<Program> logger) =>
 {
+    logger.LogInformation("Adding numbers via backend service");
+
     var backend = factory.CreateClient("backend");
     var dataResponse = await backend.GetFromJsonAsync<ResultDto>("/data");
+
+    var sum = 0;
+
+    // .NET Activities are called Spans in OpenTelemetry.
+    // When using Aspire, telemetry data is sent to the dashboard using OTLP
+    // (OpenTelemetry protocol)
+    using (var activity = source.StartActivity("Adding"))
+    {
+        await Task.Delay(100);
+        sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0;
+        activity?.SetTag("sum", sum);
+        totalSums.Add(sum);
+    }
+
     return Results.Ok(new
     {
-        Sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0,
+        Sum = sum,
     });
 });
 
@@ -191,6 +213,41 @@ app.MapGet("/ip", async () =>
 app.Run();
 
 record ResultDto(int X, int Y);
+```
+
+Add meter to OTLP configuration in _ServiceDefaults_:
+
+```csharp
+public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+{
+    builder.Logging.AddOpenTelemetry(logging =>
+    {
+        logging.IncludeFormattedMessage = true;
+        logging.IncludeScopes = true;
+    });
+
+    builder.Services.AddOpenTelemetry()
+        .WithMetrics(metrics =>
+        {
+            metrics.AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddRuntimeInstrumentation();
+
+            metrics.AddMeter("TotalSum"); // <<< Add this
+        })
+        .WithTracing(tracing =>
+        {
+            tracing.AddSource(builder.Environment.ApplicationName)
+                .AddAspNetCoreInstrumentation()
+                // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
+                //.AddGrpcClientInstrumentation()
+                .AddHttpClientInstrumentation();
+        });
+
+    builder.AddOpenTelemetryExporters();
+
+    return builder;
+}
 ```
 
 # Add Postgres
@@ -256,13 +313,35 @@ app.UseHttpsRedirection();
 
 app.MapGet("/ping", () => "pong");
 
-app.MapGet("/add", async (IHttpClientFactory factory) =>
+// .NET Activity Source is called "Tracer" in OpenTelemetry.
+// Consider using https://opentelemetry.io/docs/languages/net/shim/
+// to harmonize the naming of the components.
+var source = new ActivitySource("WebApi");
+var totalSums = new Meter("TotalSum").CreateCounter<int>("sum.total");
+
+app.MapGet("/add", async (IHttpClientFactory factory, ILogger<Program> logger) =>
 {
+    logger.LogInformation("Adding numbers via backend service");
+
     var backend = factory.CreateClient("backend");
     var dataResponse = await backend.GetFromJsonAsync<ResultDto>("/data");
+
+    var sum = 0;
+
+    // .NET Activities are called Spans in OpenTelemetry.
+    // When using Aspire, telemetry data is sent to the dashboard using OTLP
+    // (OpenTelemetry protocol)
+    using (var activity = source.StartActivity("Adding"))
+    {
+        await Task.Delay(100);
+        sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0;
+        activity?.SetTag("sum", sum);
+        totalSums.Add(sum);
+    }
+
     return Results.Ok(new
     {
-        Sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0,
+        Sum = sum,
     });
 });
 
@@ -417,13 +496,35 @@ app.UseSession();
 
 app.MapGet("/ping", () => "pong");
 
-app.MapGet("/add", async (IHttpClientFactory factory) =>
+// .NET Activity Source is called "Tracer" in OpenTelemetry.
+// Consider using https://opentelemetry.io/docs/languages/net/shim/
+// to harmonize the naming of the components.
+var source = new ActivitySource("WebApi");
+var totalSums = new Meter("TotalSum").CreateCounter<int>("sum.total");
+
+app.MapGet("/add", async (IHttpClientFactory factory, ILogger<Program> logger) =>
 {
+    logger.LogInformation("Adding numbers via backend service");
+
     var backend = factory.CreateClient("backend");
     var dataResponse = await backend.GetFromJsonAsync<ResultDto>("/data");
+
+    var sum = 0;
+
+    // .NET Activities are called Spans in OpenTelemetry.
+    // When using Aspire, telemetry data is sent to the dashboard using OTLP
+    // (OpenTelemetry protocol)
+    using (var activity = source.StartActivity("Adding"))
+    {
+        await Task.Delay(100);
+        sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0;
+        activity?.SetTag("sum", sum);
+        totalSums.Add(sum);
+    }
+
     return Results.Ok(new
     {
-        Sum = dataResponse?.X ?? 0 + dataResponse?.Y ?? 0,
+        Sum = sum,
     });
 });
 

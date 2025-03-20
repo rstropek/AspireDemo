@@ -55,6 +55,8 @@ public static class Extensions
                 metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation();
+
+                metrics.AddMeter("TotalSum");
             })
             .WithTracing(tracing =>
             {
