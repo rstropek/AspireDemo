@@ -250,6 +250,73 @@ public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) w
 }
 ```
 
+# Open Telemetry
+
+Note that the Aspire Dashboard can receive any telemetry data via OLTP. It can also be run as a standalone service using Docker:
+
+```sh
+docker run --rm -it -p 18888:18888 -p 4317:18889 --name aspire-dashboard mcr.microsoft.com/dotnet/aspire-dashboard:latest
+```
+
+Let's write a simple .NET console app that sends data via OLTP to the Aspire Dashboard.
+
+```sh
+mkdir OltpLogger
+cd OltpLogger
+dotnet new console
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package OpenTelemetry.Exporter.OpenTelemetryProtocol
+cd ..
+dotnet sln add OltpLogger
+```
+
+```csharp
+using System.Diagnostics;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
+
+public static class Program
+{
+    private static readonly ActivitySource activitySource = new("AspireWalkthrough");
+
+    public static async Task Main()
+    {
+        using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("http://localhost:4317");
+            })
+            .AddSource(activitySource.Name)
+            .Build();
+
+        using (var stepsActivity = activitySource.StartActivity("Steps"))
+        {
+            await Task.Delay(100);
+            using (var activity = activitySource.StartActivity("Step 1"))
+            {
+                await Task.Delay(150);
+                activity?.SetTag("foo", 1);
+                activity?.SetTag("bar", "Hello, World!");
+                activity?.SetStatus(ActivityStatusCode.Ok);
+            }
+
+            using (var activity = activitySource.StartActivity("Step 2"))
+            {
+                await Task.Delay(250);
+                activity?.SetTag("baz", 2);
+                activity?.SetTag("qux", "Goodbye, World!");
+                activity?.SetStatus(ActivityStatusCode.Error);
+            }
+        }
+    }
+}
+```
+
+Run the program and check the Aspire Dashboard.
+
+Don't forget to stop the docker container when you are done.
+
 # Add Postgres
 
 Let's add a Postgres database to our project. We will see how we can use the database in our services.

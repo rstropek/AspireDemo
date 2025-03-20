@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.csproj", "{FEB97078-39C1-4F22-AC42-13730319CD78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OltpLogger", "OltpLogger\OltpLogger.csproj", "{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{FEB97078-39C1-4F22-AC42-13730319CD78}.Release|x64.Build.0 = Release|Any CPU
 		{FEB97078-39C1-4F22-AC42-13730319CD78}.Release|x86.ActiveCfg = Release|Any CPU
 		{FEB97078-39C1-4F22-AC42-13730319CD78}.Release|x86.Build.0 = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|x64.Build.0 = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{E794F716-A4E4-4295-B0F2-7F2BA5C72BEA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
